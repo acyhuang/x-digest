@@ -1,6 +1,5 @@
 import json
 import logging
-import sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -21,8 +20,14 @@ def load_state():
     return {}
 
 
-def save_state(since_id):
-    STATE_FILE.write_text(json.dumps({"since_id": since_id}, indent=2))
+MIN_WINDOW = timedelta(hours=24)
+MAX_WINDOW = timedelta(days=7)
+
+
+def save_state():
+    STATE_FILE.write_text(json.dumps({
+        "last_run_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }, indent=2))
 
 
 def regenerate_index():
@@ -37,26 +42,25 @@ def regenerate_index():
 def main():
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
+    now = datetime.now(timezone.utc)
     state = load_state()
-    since_id = state.get("since_id")
+    last_run_at_str = state.get("last_run_at")
 
-    fetch_kwargs = {}
-    if since_id:
-        fetch_kwargs["since_id"] = since_id
+    if last_run_at_str:
+        last_run_at = datetime.fromisoformat(last_run_at_str.replace("Z", "+00:00"))
+        window = min(max(now - last_run_at, MIN_WINDOW), MAX_WINDOW)
     else:
-        start = (datetime.now(timezone.utc) - timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ")
-        fetch_kwargs["start_time"] = start
+        window = MAX_WINDOW
 
-    logger.info("Fetching home timeline...")
-    tweets, users, media, ref_tweets = fetch_home_timeline(**fetch_kwargs)
+    start_time = (now - window).strftime("%Y-%m-%dT%H:%M:%SZ")
+    logger.info("Fetching home timeline (window: %s)...", window)
+    tweets, users, media, ref_tweets = fetch_home_timeline(start_time=start_time)
     logger.info("Fetched %d tweets", len(tweets))
-
-    newest_id = str(max((int(t["id"]) for t in tweets), default=0)) if tweets else None
 
     filtered = tier1_filter(tweets) if tweets else []
     filtered = tier2_filter(filtered, users) if filtered else []
 
-    date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    date_str = now.strftime("%Y-%m-%d")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     render_digest(filtered, users, media, ref_tweets, date_str, OUTPUT_DIR / f"{date_str}.html", total_fetched=len(tweets))
@@ -65,9 +69,8 @@ def main():
     regenerate_index()
     render_editor(OUTPUT_DIR / "edit.html")
 
-    if newest_id and newest_id != "0":
-        save_state(newest_id)
-        logger.info("State advanced to since_id=%s", newest_id)
+    save_state()
+    logger.info("State updated (last_run_at=%s)", now.strftime("%Y-%m-%dT%H:%M:%SZ"))
 
 
 if __name__ == "__main__":
