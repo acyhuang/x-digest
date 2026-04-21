@@ -49,6 +49,7 @@
     .reason { margin-top: 0.5rem; font-size: 0.78rem; color: #8899a6; font-style: italic; }
     .xlink { margin-top: 0.5rem; font-size: 0.82rem; }
     .empty { color: #536471; text-align: center; padding: 3rem 0; font-size: 1.1rem; }
+    .stats { color: #536471; font-size: 0.82rem; text-align: center; margin-top: 1.5rem; }
   </style>
 </head>
 <body>
@@ -63,11 +64,11 @@
         <span class="handle">@{{ post.handle }}</span>
         <span class="timestamp">{{ post.timestamp }}</span>
       </div>
-      <div class="text">{{ post.text }}</div>
+      <div class="text">{{ post.text | linkify }}</div>
       {% if post.quote %}
       <div class="quote">
         <div class="quote-handle">@{{ post.quote.handle }}</div>
-        <div class="text">{{ post.quote.text }}</div>
+        <div class="text">{{ post.quote.text | linkify }}</div>
       </div>
       {% endif %}
       {% if post.image_url %}
@@ -86,5 +87,6 @@
   {% else %}
     <div class="empty">No posts matched today.</div>
   {% endif %}
+  <p class="stats">{{ posts | length }} post{{ 's' if posts | length != 1 else '' }} shown from {{ total_fetched }} tweet{{ 's' if total_fetched != 1 else '' }} read</p>
 </body>
 </html>
