@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Interests — X Digest</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      background: #f7f9f9;
+      color: #0f1419;
+    }
+    h1 { font-size: 1.4rem; margin-bottom: 0.5rem; }
+    .back { margin-bottom: 1.5rem; font-size: 0.9rem; }
+    a { color: #1d9bf0; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .hint { font-size: 0.78rem; color: #536471; margin-bottom: 0.75rem; }
+    input[type="password"], textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #e1e8ed;
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: #fff;
+    }
+    textarea {
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      resize: vertical;
+      min-height: 320px;
+    }
+    .field { margin-bottom: 1.25rem; }
+    button {
+      background: #1d9bf0;
+      color: #fff;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.55rem 1.4rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:disabled { background: #93c9f7; cursor: default; }
+    #status { margin-top: 0.75rem; font-size: 0.85rem; min-height: 1.2em; }
+    #status.ok { color: #1a8a1a; }
+    #status.err { color: #c0392b; }
+  </style>
+</head>
+<body>
+  <p class="back"><a href="index.html">&larr; All digests</a></p>
+  <h1>Edit interests.md</h1>
+  <p class="hint" style="margin-bottom:1.5rem">Changes are committed directly to the repo and take effect on the next daily digest run.</p>
+
+  <div class="field">
+    <label for="content">interests.md</label>
+    <textarea id="content" rows="20" placeholder="Loading…"></textarea>
+  </div>
+
+  <div class="field">
+    <label for="pat">GitHub Personal Access Token</label>
+    <p class="hint">Needs <code>contents: write</code> on acyhuang/x-digest. Only used client-side to authenticate the commit — never stored.</p>
+    <input type="password" id="pat" placeholder="github_pat_…">
+  </div>
+
+  <button id="save-btn" disabled>Save</button>
+  <p id="status"></p>
+
+  <script>
+    const REPO = "acyhuang/x-digest";
+    const FILE_PATH = "config/interests.md";
+    const BRANCH = "main";
+    const API_BASE = "https://api.github.com";
+    const RAW_URL = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${FILE_PATH}`;
+
+    let fileSha = null;
+
+    const contentEl = document.getElementById("content");
+    const patEl = document.getElementById("pat");
+    const saveBtn = document.getElementById("save-btn");
+    const statusEl = document.getElementById("status");
+
+    function setStatus(msg, type) {
+      statusEl.textContent = msg;
+      statusEl.className = type || "";
+    }
+
+    patEl.addEventListener("input", () => {
+      saveBtn.disabled = patEl.value.trim() === "";
+    });
+
+    async function loadFile() {
+      try {
+        const [rawRes, apiRes] = await Promise.all([
+          fetch(RAW_URL),
+          fetch(`${API_BASE}/repos/${REPO}/contents/${FILE_PATH}?ref=${BRANCH}`),
+        ]);
+        if (!rawRes.ok) throw new Error(`Failed to load file: ${rawRes.status}`);
+        contentEl.value = await rawRes.text();
+        if (apiRes.ok) {
+          const data = await apiRes.json();
+          fileSha = data.sha;
+        }
+      } catch (err) {
+        contentEl.placeholder = "Failed to load. Check your network and try refreshing.";
+        setStatus(err.message, "err");
+      }
+    }
+
+    saveBtn.addEventListener("click", async () => {
+      const pat = patEl.value.trim();
+      if (!pat) return;
+
+      saveBtn.disabled = true;
+      setStatus("Saving…");
+
+      try {
+        if (!fileSha) {
+          const apiRes = await fetch(`${API_BASE}/repos/${REPO}/contents/${FILE_PATH}?ref=${BRANCH}`, {
+            headers: { Authorization: `Bearer ${pat}` },
+          });
+          if (apiRes.ok) fileSha = (await apiRes.json()).sha;
+        }
+
+        const body = {
+          message: "Update interests.md via web editor",
+          content: btoa(unescape(encodeURIComponent(contentEl.value))),
+          branch: BRANCH,
+        };
+        if (fileSha) body.sha = fileSha;
+
+        const res = await fetch(`${API_BASE}/repos/${REPO}/contents/${FILE_PATH}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${pat}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.message || `HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        fileSha = data.content.sha;
+        setStatus("Saved! Changes will apply on the next digest run.", "ok");
+      } catch (err) {
+        setStatus(`Error: ${err.message}`, "err");
+      } finally {
+        saveBtn.disabled = patEl.value.trim() === "";
+      }
+    });
+
+    loadFile();
+  </script>
+</body>
+</html>
