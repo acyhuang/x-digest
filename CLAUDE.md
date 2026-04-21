@@ -28,7 +28,6 @@ output/       # generated HTML (gitignored on main; committed to gh-pages)
 
 ### Entry points
 - `src/digest.py` — daily run
-- `src/refresh_examples.py` — weekly liked-tweets refresh
 
 ## Data fetching
 
@@ -50,12 +49,6 @@ output/       # generated HTML (gitignored on main; committed to gh-pages)
 - Pagination: follow `next_token` in response metadata until `since_id` is reached or 200-post cap hit
 - Rate limit: 180 req / 15 min — well above what a single daily run needs
 
-### Liked tweets (examples source only)
-- Endpoint: `GET /2/users/:id/liked_tweets`
-- Same fields/expansions as home timeline
-- Purpose: source for `config/examples.yaml` (Allison's interest profile for LLM prompts) — **not** included in the digest itself
-- Rate limit: 75 req / 15 min
-
 ### Bookmarks
 - Excluded intentionally — requires OAuth 2.0 PKCE; not supported with OAuth 1.0a
 
@@ -74,7 +67,7 @@ output/       # generated HTML (gitignored on main; committed to gh-pages)
 - Prompt structure: prose interest description from `config/interests.md`, followed by few-shot positive examples from `config/examples.yaml`, followed by the batch of candidate posts
 - `config/interests.md` — Allison-authored prose ("interested in X, Y; not interested in A, B"). Prepended verbatim to the prompt; this is the primary signal for what counts as relevant
 - `config/examples.yaml` — positive examples only, flat list of strings in `@handle: tweet text` format. Include all (cap at 30 in the prompt, sample randomly beyond that)
-- Initial seed: Allison writes `interests.md` and seeds ~20 examples before first run; weekly liked-tweets refresh then maintains `examples.yaml` as a rolling window of the ~50 most recent liked tweets
+- `config/examples.yaml` is manually curated
 - On malformed output: retry once with stricter prompt ("Return ONLY valid JSON"); if still malformed, pass all Tier 1 survivors through and log a warning
 - ~$0.01–0.02/day estimated cost
 
@@ -101,13 +94,12 @@ output/       # generated HTML (gitignored on main; committed to gh-pages)
 - `state/last_run.json` — persists `since_id` of the most recently fetched tweet, committed to the repo. Advanced only after a successful publish, so render failures don't silently drop posts from the next run
 - On first run (no state file): use `start_time = now - 7 days` via the X API `start_time` param (ISO 8601)
 - `config/interests.md` — Allison-authored prose description of what counts as relevant
-- `config/examples.yaml` — few-shot positive examples for the LLM filter; maintained as a rolling window of the ~50 most recent liked tweets by the weekly refresh
+- `config/examples.yaml` — few-shot positive examples for the LLM filter; manually curated
 
 ## Scheduling & CI
 
 ### Cron
 - Daily digest: `0 9 * * *` (9am UTC)
-- Weekly liked-tweets refresh: `0 8 * * 0` (8am UTC Sunday)
 - Lookback: since last successful run, capped at 7 days maximum
 - Post volume cap: 200 posts per run
 

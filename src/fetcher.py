@@ -61,22 +61,3 @@ def fetch_home_timeline(since_id=None, start_time=None, max_posts=200):
             break
 
     return tweets[:max_posts], users, media, ref_tweets
-
-
-def fetch_liked_tweets(max_results=50):
-    url = f"{BASE_URL}/users/{USER_ID}/liked_tweets"
-    params = {
-        "tweet.fields": TWEET_FIELDS,
-        "expansions": EXPANSIONS,
-        "user.fields": USER_FIELDS,
-        "media.fields": MEDIA_FIELDS,
-        "max_results": min(max_results, 100),
-    }
-
-    resp = requests.get(url, params=params, auth=_auth())
-    resp.raise_for_status()
-    data = resp.json()
-
-    tweets = data.get("data", [])
-    users = {u["id"]: u for u in data.get("includes", {}).get("users", [])}
-    return tweets, users
