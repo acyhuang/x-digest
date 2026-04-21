@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X Digest — {{ date }}</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      background: #f7f9f9;
+      color: #0f1419;
+    }
+    h1 { font-size: 1.4rem; margin-bottom: 1.5rem; }
+    .back { margin-bottom: 1.5rem; font-size: 0.9rem; }
+    a { color: #1d9bf0; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .post {
+      background: #fff;
+      border: 1px solid #e1e8ed;
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+    }
+    .header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.3rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .author { font-weight: 700; }
+    .handle { color: #536471; }
+    .timestamp { color: #536471; font-size: 0.82rem; margin-left: auto; }
+    .text { line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+    .image { margin-top: 0.75rem; }
+    .image img { max-width: 100%; border-radius: 8px; display: block; }
+    .quote {
+      margin-top: 0.75rem;
+      border: 1px solid #e1e8ed;
+      border-radius: 8px;
+      padding: 0.7rem 1rem;
+      background: #f7f9f9;
+    }
+    .quote-handle { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem; }
+    .quote .text { font-size: 0.9rem; color: #536471; }
+    .reason { margin-top: 0.5rem; font-size: 0.78rem; color: #8899a6; font-style: italic; }
+    .xlink { margin-top: 0.5rem; font-size: 0.82rem; }
+    .empty { color: #536471; text-align: center; padding: 3rem 0; font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+  <p class="back"><a href="index.html">&larr; All digests</a></p>
+  <h1>X Digest &mdash; {{ date }}</h1>
+
+  {% if posts %}
+    {% for post in posts %}
+    <div class="post">
+      <div class="header">
+        <span class="author">{{ post.author_name }}</span>
+        <span class="handle">@{{ post.handle }}</span>
+        <span class="timestamp">{{ post.timestamp }}</span>
+      </div>
+      <div class="text">{{ post.text }}</div>
+      {% if post.quote %}
+      <div class="quote">
+        <div class="quote-handle">@{{ post.quote.handle }}</div>
+        <div class="text">{{ post.quote.text }}</div>
+      </div>
+      {% endif %}
+      {% if post.image_url %}
+      <div class="image">
+        <a href="{{ post.tweet_url }}" target="_blank" rel="noopener">
+          <img src="{{ post.image_url }}" alt="attached image" loading="lazy">
+        </a>
+      </div>
+      {% endif %}
+      {% if post.reason %}
+      <div class="reason">{{ post.reason }}</div>
+      {% endif %}
+      <div class="xlink"><a href="{{ post.tweet_url }}" target="_blank" rel="noopener">View on X &rarr;</a></div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty">No posts matched today.</div>
+  {% endif %}
+</body>
+</html>
