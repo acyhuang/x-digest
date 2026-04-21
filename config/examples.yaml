@@ -7,3 +7,104 @@
 - "@TheVixhal: Building a Neural Network from Scratch in Pure x86-64 Assembly. Yeah, you read that right. We're doing this at the lowest level possible. In this article we're going to building a tiny XOR neural network in x86-64 assembly. No libraries. No shortcuts. Just you and the CPU. Prerequisites: You should know the basics of what a neural network is (layers, weights, biases, activation functions). Some assembly experience helps, but I'll explain things as we go. You'll need NASM and GCC installed on a Linux box. Table of Contents: The Game Plan, Quick Refresher: What Are We Actually Computing?, Setting Up: Data Section and Memory Layout, Step 1: The Forward Pass, Step 2: The Activation Function (Sigmoid), Step 3: Computing the Loss, Step 4: Backpropagation, Step 5: Weight Updates, Step 6: The Training Loop, Full Code Listing, Building and Running"
 - "@trq212: Using Claude Code: Session Management & 1M Context. In my recent calls with Claude Code users, one theme keeps coming up: the 1M token context window is a double-edged sword. It lets Claude Code operate autonomously for longer and handle tasks more reliably, but it also opens the door to context pollution if you're not deliberate about managing your sessions. Session management matters more than ever and there seem to be a lot of questions about it. Do you keep one session open in a terminal, or two? Start fresh with every prompt? When should you use compact, rewind, or subagents? What causes a bad compact? There's a surprising amount of detail here that can really shape your experience with Claude Code and almost all of it comes from managing your context window. A Quick Primer on Context, Compaction & Context Rot: The context window is everything the model can \"see\" at once when generating its next response. It includes your system prompt, the conversation so far, every tool call and its output, and every file that's been read. Claude Code has a context window of one million tokens. Unfortunately using context has a slight cost, which is often called context rot. Context rot is the observation that model performance degrades as context grows because attention gets spread across more tokens, and older, irrelevant content starts to distract from the current task. For our 1MM context model, we see some level of context rot happen around ~300-400k tokens, but it is highly dependent on the task- not a fast rule. Context windows are a hard cutoff, so when you're nearing the end of the context window, you will need to summarize the task you've been working on into a smaller description and continue the work in a new context window, we call this compaction. You can also trigger compaction yourself."
 - "@andy_matuschak: ⭐ New talk! https://andymatuschak.org/tat Coding agents might help us finally break out of two cages: the app model, which traps computing in one-size-fits-all silos; and programming as a specialization, which has crowded out cultures of imagination and domain insight."
+- "@a1zhang: tldr; in 2026, phd'ing can be really fun! an opinion you don't hear that often for other students and researchers, I figured it's worth providing a vague chronological sense for how these thoughts panned out over the course of my first year in my PhD! it's been a blast so far, and I figured it was worth sharing what's been going on for me in case younger researchers are curious about whether pursuing a PhD is fruitful. It's funny because as @m_sirovatka & @simonguozirui & other GPU MODE folks know, my initial interest pre-PhD was LM-generated GPU kernels / compilers (sadly I'm washed now...), which is just completely unrelated :p Around the start of the PhD we floated around the idea of general sub-agent calling / recursive LM-calling, and I iterated very quickly (basically every day I'd have a new update or version of the idea and new results) until around October, where we were super happy with how it was designed & articulated. Everything in the REPL seemed to be the key. I had an upcoming midterm, but pushed for getting results out for an initial blog to get some external feedback, something I learned from
+  @OfirPress when doing VideoGameBench -- tbh didn't think it'd blow up, but was pleasantly surprised with the feedback. It was around this time that the idea for THIS BLOG (MGH) was first vaguely formalized in my head, although it generally was just to motivate why RLMs were interesting beyond long context. I delayed putting it out in favor of polishing and finishing out the RLM paper itself. First semester ends.
+- "@_chenglou: My dear front-end developers (and anyone who's interested in the future of interfaces):
+
+  I have crawled through depths of hell to bring you, for the foreseeable years, one of the more important foundational pieces of UI engineering (if not in implementation then certainly at least in concept):
+  Fast, accurate and comprehensive userland text measurement algorithm in pure TypeScript, usable for laying out entire web pages without CSS, bypassing DOM measurements and reflow"
+- "@JayaGup10: The Half-Life of a Vertical Model?
+  There's a strange dynamic playing out in AI right now. An AI-native app disrupts a legacy SaaS company. A frontier lab releases a new model and leapfrogs the AI app. Then a SaaS company with a vertical model outperforms the frontier lab at the specific job. And so it goes — each layer of the stack keeps eating and getting eaten, and nobody stays on top for long.
+  This week, the conversation around specialized models and the economics of post-training has exploded. Seemingly overnight, every serious vertical AI company shipped or announced their own model: Cognition with SWE 1.5, Cursor with Composer 2, Decagon with an unnamed model, Hippocratic with Polaris 3, Intercom with Fin Apex 1, EvenUp with Piai.
+  The bull case, as these companies tell it: General-purpose models are simultaneously over-serving verticals — more raw intelligence than customer service or code review actually needs — and under-serving them, not tuned for the domain-specific qualities that matter for the job. Tone. Judgment. Attentiveness. Task completion. Domain-specific post-training on proprietary evals closes that gap, and it closes it fast!
+  Intercom just shipped Apex, replacing Sonnet 4.0 as Fin's core answering model. One gaming customer saw resolution rates jump overnight from 68% to 75% — a 22% reduction in unresolved conversations from a single model swap. They've never seen a jump that large. Importantly, this is not a \"save money\" story. It's a \"better results\" story. Faster, fewer hallucinations, and cheaper but the lead pitch is performance, not cost. (this used to be more cost)
+  And the flywheel story is real. Millions of interactions become proprietary evals, which train a fine-tuned model, which produces better resolutions, which generates more data, which sharpens the evals. The moat isn't the model weights. It's the eval infrastructure and the proprietary data underneath aka the accumulated record of what worked and what did not.
+  The bear case, as the naysayers see it: The hard part isn't building a better model. It's staying better + It's keeping it better. What's the half-life of the advantage? If the next frontier release leapfrogs your fine-tune in three to six months, and retraining takes two to three, you're running in place. Every company that claims \"we trained our own model\" has to answer a harder question: will it still be better next month?
+  This has actually happened multiple times in the last few years after the models get closer to the application layer. Waves of companies announce their own fine-tuned models, and every single time, the next frontier update wipes out the advantage. So when six companies ship vertical models in the same week, you have to ask why now — and whether this time is actually different."
+- "@elliotarledge: The RL Environment Business
+  There's a hidden industry behind every frontier model you use. When Claude gets better at coding, when GPT gets better at math, when Gemini gets better at tool use — that doesn't happen by magic. Someone had to build the training environments that made those improvements possible. And right now, that \"someone\" is a handful of small, mostly stealth companies operating on contracts with the big labs. I've spent the last couple years deep in GPU programming — I made a 12-hour CUDA course for FreeCodeCamp, I'm writing \"CUDA for Deep Learning\" with Manning, and I built KernelBench v3, a multi-platform GPU kernel benchmark suite. All of that work orbits the same question: how do you rigorously evaluate whether code actually works, and how do you do it at scale? That question is at the heart of RL environment design. I'm going to explain how this business likely works based on what's publicly known, why it matters, and why I think the next generation of it looks less like boutique contracting firms and more like a massive distributed workforce — potentially thousands of people building RL environments for whatever domain they're expert in.
+- "@signulll: the most underrated hire right now is a great product person.
+
+  when i say product person i'm def not talking about a product manager. perhaps i think there has to be somewhat of a new role. i don't have a good name for it yet but maybe something like \"product thinker\".. someone with an intuitive grasp of the product as it exists, where it's soft, where it sings, & how to iterate it toward something even sharper. in some sense, this person has to cohesively hold in their head where this product should be 2 years from now & work backwards from that.
+
+  i say this cuz when building was hard, engineering was the bottleneck & the status hierarchy often reflected that. building is no longer hard. which means the variance in outcomes has shifted almost entirely to judgment on what to build, how to sequence it, & how to talk about it.
+
+  & the story matters as much as the thing. internally, it organizes the team around a shared model of why. externally, it shapes the interpretive frame users bring to their first experience. you can't retrofit narrative onto a product & expect it to land, it has to be load bearing from the start.
+
+  the rarest version of this person sits at the intersection of culture & deep technology. someone genuinely bilingual. they know what's technically possible & they know which cultural currents are real vs. ephemeral. that combo is what separates products that feel inevitable from products that feel assembled.
+
+  before ppl clap back with this person has always been valuable, i know.. i am just saying now they might be the most *important* person in the room. their value compounds like never before."
+- "@lennysan: My biggest takeaways from
+  @jenny_wen
+   (design lead at
+  @AnthropicAI
+  ):
+
+  1. The traditional design process is breaking down. The classic discover-diverge-converge loop that designers have relied on for years doesn't work when engineers can spin up seven coding agents and ship a working version before a designer finishes exploring options.
+
+  2. Design work is splitting into two distinct modes. The first is supporting execution: consulting with engineers as they build, giving feedback, polishing in code. The second is setting short-range vision, now scoped to three to six months instead of multi-year roadmaps. The vision work is still critical because when everyone can build anything fast, someone needs to point the team in a coherent direction.
+
+  3. Build trust through speed, not perfection. Anthropic ships products early, labels them research previews, and then iterates publicly based on real feedback. Jenny argues that what actually degrades a brand isn't launching something rough; it's launching something rough and then going silent. If you ship fast, respond to feedback visibly, and keep improving, users will trust you more, not less.
+
+  4. The most overlooked hire in design right now is the cracked new grad. Most companies are hiring senior designers with deep experience. Jenny argues that early-career people with blank slates, fast learning curves, and no attachment to legacy processes may be uniquely suited to this moment. They don't carry baked-in rituals that are now obsolete, and their lack of expectations can actually be an advantage.
+
+  5. Chat as an interface isn't going away. Despite expectations that chatbots were a temporary stop on the way to richer UIs, Jenny sees chat as a permanently valuable interface because it offers infinite flexibility. But she expects a hybrid future where models increasingly generate UI elements on the fly for specific tasks (like the interactive widgets Claude recently shipped) while chat remains the connective tissue between them."
+- "@willccbb: hiring call for a very specific role: \"research product engineer\"
+
+  DM if this is you:
+  - have a background in front-end/web dev, highly opinionated about design, ideally have product experience at a fast-growth startup
+  - have some experience building with + for agents
+  - have interest in / exposure to modern ai research topics (e.g. you follow model releases + benchmarks, are \"on ai twitter\", occasionally read papers, roughly know how LLMs work, can explain the difference between pretraining and RL)
+  - high-agency + have a personal project/portfolio i can look at
+  - are open to in-person in SF
+  - are excited about the mission of democratizing AI research
+
+  you'll have a high degree of ownership in shaping the evolution of the UX for our Lab platform. the bar for the role is high, we want someone excellent."
+- "@phokarlsson: When I read lively prose, one thing I notice is that it packs a lot of information per sentence—but not, usually, by being compact. Instead, how to explain it?
+  Take this phrase \"an interesting and exciting new finding\"—that's pretty dead. And one of several reasons is that the word \"exciting\" is sort of implicated by the word \"interesting\". They are not synonyms, but if I had blanked \"exciting\" and asked you, or a language model, to fill it in, \"exciting\" would have a high probability. So it is not adding all that much information—the reader already have that adjective implicitly in their head.
+  A better writer would have either dropped one (or both) of the adjective(s). OR they would have found a second one that was true, important, and not predicted by the first. Lets see if I can make a decent example: \"an interesting and annoying new finding.\" Ok, not great. But you get the point.
+  In good prose, there is a feeling that the writer keeps track of the predictions the reader makes and then goes, \"Fine, then I don't need to say that, but can add something new.\" It creates lively, information rich, yet not compact and hard-to-read prose."
+- "@notawizard: Applications are now open for the 2026 Paradigm Fellowship: a 4-day retreat for young people who are obsessively good at something technical.
+
+  For our fourth year, we're expanding to welcome builders across every frontier — AI, robotics, energy, bio, prediction markets, or something we haven't thought of.
+
+  Last year's cohort came from 10 countries. Some were undergrads, some were dropouts, some were founders, some came from OpenAI, SpaceX, Citadel, and Kalshi.
+
+  The format is simple: firesides, whiteboarding sessions, and time to hack. What makes it special is what happens in between, and after. Fellows have met cofounders, started companies, and gone on to raise from Paradigm and others.
+
+  I was a fellow before joining Paradigm, the retreat was a transformative trip for me, and I met some of my closest friends through the program.
+
+  Apply by June 8th. Retreat runs August 12–15th."
+- "@OBalcells: Imagine if ChatGPT highlighted every word it wasn't sure about. We built a streaming hallucination detector that flags hallucinations in real-time."
+- "@hamostaf04: The Agent Research Loop
+  TL;DR: Karpathy's autoresearch is more important than people realize. Not because of the results, but because of the pattern. A tight loop with structured feedback turns a coding agent into an autonomous researcher. I think this pattern generalizes far beyond ML training, and I think it changes what humans actually do in technical work. My friend @DennwsLee and I built an open-source harness to test this. 550+ experiments across four tasks over a weekend, zero babysitting.
+  Autoresearch Is Bigger Than Pre-Training
+
+  When Karpathy released autoresearch earlier this month, a lot of the coverage focused on the results. 126 experiments overnight. 20 additive improvements. 11% speedup on Time-to-GPT-2.
+  Those are good numbers. But I think people are missing the more important thing: the pattern.
+  One GPU, one file, one metric. The agent reads the training script, forms a hypothesis, modifies the code, runs the experiment for exactly 5 minutes, checks if the result improved, keeps or discards, and repeats. Git is the memory. The fixed time budget makes comparison fair. One change at a time so you know what caused the effect.
+  This isn't a pre-training trick. This is the scientific method compressed into a loop that an agent can execute indefinitely. And there's nothing about it that's specific to training neural networks."
+- "@AnthropicAI: New Anthropic research: Measuring AI agent autonomy in practice. We analyzed millions of interactions across Claude Code and our API to understand how much autonomy people grant to agents, where they're deployed, and what risks they may pose. Read more:"
+- "@arscontexta: Skill Graphs > SKILL.md
+  people underestimate the power of structured knowledge. it enables entirely new kinds of applications
+  right now people write skills that capture one aspect of something. a skill for summarizing, a skill for code review and so on. (often) one file with one capability
+  thats fine for simple tasks but real depth requires something else
+  imagine a therapy skill that provides relevant information about cognitive behavioral patterns, attachment theory, active listening techniques, emotional regulation frameworks and so on
+  a single skill file cant hold that
+  skill graphs
+
+  a skill graph is a network of skill files connected with wikilinks
+  instead of one big file you have many small composable pieces that reference each other. each file is one complete thought, technique or skill and [[wikilinks between them create a traversable graph]]
+  a skill graph applies the same skill discovery pattern recursively inside the graph itself
+  every node has a yaml description the agent can scan without reading the whole file
+  every wiki link carries meaning because its woven into prose so the agent follows relevant paths and skips what doesnt matter
+  progressive disclosure:
+  index → descriptions → links → sections → full content
+  most decisions happen before reading a single full file
+  the primitives
+
+  you already have everything you need
+  wikilinks that read as prose in sentences, so they carry meaning not just references
+  yaml frontmatter with descriptions so the agent can scan without reading full files
+  MOCs (maps of content) that organize clusters of related skills into navigable sub-topics
+  skill links to other skills which link to other skills and the graph goes as deep as the domain requires"

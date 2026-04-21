@@ -40,6 +40,11 @@ def tier2_filter(tweets, users):
     examples = examples or []
     sampled = random.sample(examples, min(30, len(examples)))
 
+    bad_examples_path = CONFIG_DIR / "bad-examples.yaml"
+    bad_examples = yaml.safe_load(bad_examples_path.read_text()) if bad_examples_path.exists() else []
+    bad_examples = bad_examples or []
+    sampled_bad = random.sample(bad_examples, min(15, len(bad_examples)))
+
     lines = []
     for t in tweets:
         handle = users.get(t["author_id"], {}).get("username", "unknown")
@@ -50,8 +55,10 @@ def tier2_filter(tweets, users):
         "You are filtering a Twitter/X timeline for relevance to a specific person's interests.\n\n"
         "## Interests\n"
         f"{interests}\n\n"
-        "## Positive examples (posts this person has liked):\n"
+        "## Positive examples (posts this person wants to see):\n"
         + "\n".join(f"- {e}" for e in sampled)
+        + "\n\n## Negative examples (posts this person does NOT want to see):\n"
+        + "\n".join(f"- {e}" for e in sampled_bad)
         + "\n\n## Posts to evaluate:\n"
         + "\n".join(lines)
         + "\n\nReturn a JSON array of relevant posts in a ```json block:\n"
