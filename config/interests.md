@@ -1,9 +1,17 @@
+The core question for any post: does it say something of value? Include it if it makes a point, presents an argument, shares non-obvious information, or synthesizes something in a way that shifts how you'd think about a topic. Topic match matters less than this — a sharp take on relationship dynamics beats a hollow tweet about AI.
 
-These topics are starting points, not strict filters. Include posts that are tangentially or laterally connected — if something feels like it lives in the same intellectual neighborhood, lean toward including it.
+Specifically exclude:
 
-Also include tweets that reference a piece of external material (a talk, paper, essay, interview, etc.) if: (a) what they say about it connects to any of these interests, or (b) it's from a credible or notable source in these spaces (e.g. a researcher, founder, or practitioner with relevant expertise). The material itself is often the value, not just the tweet.
+- Empty statements — tweets that gesture at a topic without landing anywhere ("this changes everything", "fascinating times", "so true")
+- Bare links or quotes — if someone shares an article, paper, or quoted tweet without explaining why it's interesting or what's worth taking away, skip it. Even for credible sources (researchers, founders, practitioners), the sharer should offer at least a brief framing of why it's relevant to these interests — not just "this is important" or "worth reading"
+- Restatements of public facts — avoid tweets that just recap publicly announced news (a model release, a product launch) with no added analysis or non-obvious angle
 
-Exclude hype, clickbait, and low-signal takes — but domain doesn't matter much. High-quality commentary or analysis from outside these topics is welcome.
+Include with some tolerance:
+- Thread starters — if the opening tweet makes a point, include it even if the full thread context isn't visible
+- Old references — a 2022 paper cited today is fine if the argument around it is good
+- Personal/founder updates — only if what they built is itself interesting, not just that they shipped something
+
+Relevant topics: 
 
 AI research and implications
 - How do frontier models and agents work?
@@ -17,11 +25,9 @@ Early-stage startups
 - What interesting ideas are people working on?
 - How are VCs or incubators making sense of the current moment?
 
-
-Education reimagined
+Education
 - What could radical alternatives look like — Socratic pedagogy, AI tutors, entirely new school models?
 - What does learning science and cognitive science say about better curriculum and reading instruction?
-
 
 Technical change and human questions
 - What does AI mean for how knowledge gets produced?
