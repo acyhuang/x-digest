@@ -1,16 +1,30 @@
+import re
 from datetime import datetime
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+from markupsafe import Markup, escape
 
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 
+_URL_RE = re.compile(r"(https?://\S+)")
+
+
+def _linkify(text):
+    escaped = escape(text)
+    linked = _URL_RE.sub(
+        r'<a href="\1" target="_blank" rel="noopener">\1</a>', str(escaped)
+    )
+    return Markup(linked)
+
 
 def _env():
-    return Environment(
+    env = Environment(
         loader=FileSystemLoader(str(TEMPLATES_DIR)),
         autoescape=select_autoescape(["html", "j2"]),
     )
+    env.filters["linkify"] = _linkify
+    return env
 
 
 def _build_post(tweet, users, media, ref_tweets):
@@ -57,13 +71,20 @@ def _build_post(tweet, users, media, ref_tweets):
     }
 
 
-def render_digest(tweets, users, media, ref_tweets, date_str, output_path):
+def render_digest(tweets, users, media, ref_tweets, date_str, output_path, total_fetched=0):
     posts = [_build_post(t, users, media, ref_tweets) for t in tweets]
     posts.sort(key=lambda p: p["created_at"])
-    html = _env().get_template("digest.html.j2").render(date=date_str, posts=posts)
+    html = _env().get_template("digest.html.j2").render(
+        date=date_str, posts=posts, total_fetched=total_fetched
+    )
     Path(output_path).write_text(html, encoding="utf-8")
 
 
 def render_index(digests, output_path):
     html = _env().get_template("index.html.j2").render(digests=digests)
+    Path(output_path).write_text(html, encoding="utf-8")
+
+
+def render_editor(output_path):
+    html = _env().get_template("edit.html.j2").render()
     Path(output_path).write_text(html, encoding="utf-8")

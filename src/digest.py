@@ -6,7 +6,7 @@ from pathlib import Path
 
 from fetcher import fetch_home_timeline
 from filter import tier1_filter, tier2_filter
-from renderer import render_digest, render_index
+from renderer import render_digest, render_editor, render_index
 
 logger = logging.getLogger(__name__)
 
@@ -59,10 +59,11 @@ def main():
     date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    render_digest(filtered, users, media, ref_tweets, date_str, OUTPUT_DIR / f"{date_str}.html")
+    render_digest(filtered, users, media, ref_tweets, date_str, OUTPUT_DIR / f"{date_str}.html", total_fetched=len(tweets))
     logger.info("%d posts in today's digest", len(filtered))
 
     regenerate_index()
+    render_editor(OUTPUT_DIR / "edit.html")
 
     if newest_id and newest_id != "0":
         save_state(newest_id)
