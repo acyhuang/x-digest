@@ -4,7 +4,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 from fetcher import fetch_home_timeline
-from filter import tier1_filter, tier2_filter
+from filter import tier1_filter, tier2_filter, collapse_threads
 from renderer import render_digest, render_editor, render_index
 
 logger = logging.getLogger(__name__)
@@ -58,6 +58,7 @@ def main():
     logger.info("Fetched %d tweets", len(tweets))
 
     filtered = tier1_filter(tweets) if tweets else []
+    filtered = collapse_threads(filtered) if filtered else []
     filtered = tier2_filter(filtered, users) if filtered else []
 
     date_str = now.strftime("%Y-%m-%d")

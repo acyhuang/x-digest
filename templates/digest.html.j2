@@ -46,6 +46,7 @@
     }
     .quote-handle { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem; }
     .quote .text { font-size: 0.9rem; color: #536471; }
+    .thread-badge { font-size: 0.78rem; color: #8899a6; margin-left: 0.3rem; }
     .reason { margin-top: 0.5rem; font-size: 0.78rem; color: #8899a6; font-style: italic; }
     .xlink { margin-top: 0.5rem; font-size: 0.82rem; }
     .empty { color: #536471; text-align: center; padding: 3rem 0; font-size: 1.1rem; }
@@ -62,6 +63,7 @@
       <div class="header">
         <span class="author">{{ post.author_name }}</span>
         <span class="handle">@{{ post.handle }}</span>
+        {% if post.thread_count > 1 %}<span class="thread-badge">thread &middot; {{ post.thread_count }} tweets</span>{% endif %}
         <span class="timestamp">{{ post.timestamp }}</span>
       </div>
       <div class="text">{{ post.text | linkify }}</div>

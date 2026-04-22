@@ -2,6 +2,7 @@ import json
 import logging
 import random
 import re
+from collections import defaultdict
 from pathlib import Path
 
 import anthropic
@@ -27,6 +28,26 @@ def tier1_filter(tweets):
         kept.append(t)
     logger.info("Tier 1: %d → %d", len(tweets), len(kept))
     return kept
+
+
+def collapse_threads(tweets):
+    groups = defaultdict(list)
+    for t in tweets:
+        groups[t.get("conversation_id", t["id"])].append(t)
+
+    result = []
+    for group in groups.values():
+        if len(group) == 1:
+            result.append(group[0])
+        else:
+            group.sort(key=lambda t: t.get("created_at", ""))
+            combined_text = "\n\n".join(t["text"] for t in group)
+            synthetic = dict(group[0], text=combined_text, _thread_count=len(group))
+            result.append(synthetic)
+
+    result.sort(key=lambda t: t.get("created_at", ""))
+    logger.info("Thread collapse: %d → %d", len(tweets), len(result))
+    return result
 
 
 def tier2_filter(tweets, users):

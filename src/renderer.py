@@ -58,6 +58,7 @@ def _build_post(tweet, users, media, ref_tweets):
                 }
             break
 
+    link_id = tweet.get("conversation_id") or tweet["id"]
     return {
         "author_name": name,
         "handle": handle,
@@ -66,8 +67,9 @@ def _build_post(tweet, users, media, ref_tweets):
         "text": tweet["text"],
         "image_url": image_url,
         "quote": quote,
-        "tweet_url": f"https://x.com/{handle}/status/{tweet['id']}",
+        "tweet_url": f"https://x.com/{handle}/status/{link_id}",
         "reason": tweet.get("_reason", ""),
+        "thread_count": tweet.get("_thread_count", 1),
     }
 
 

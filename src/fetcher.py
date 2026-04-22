@@ -5,7 +5,7 @@ from requests_oauthlib import OAuth1
 USER_ID = "1330044133000491008" 
 BASE_URL = "https://api.twitter.com/2"
 
-TWEET_FIELDS = "text,lang,author_id,created_at,attachments,referenced_tweets,in_reply_to_user_id"
+TWEET_FIELDS = "text,lang,author_id,created_at,attachments,referenced_tweets,in_reply_to_user_id,conversation_id"
 EXPANSIONS = "author_id,attachments.media_keys,referenced_tweets.id,referenced_tweets.id.author_id"
 USER_FIELDS = "name,username"
 MEDIA_FIELDS = "url,preview_image_url,type"
