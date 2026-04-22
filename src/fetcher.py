@@ -20,7 +20,7 @@ def _auth():
     )
 
 
-def fetch_home_timeline(since_id=None, start_time=None, max_posts=200):
+def fetch_home_timeline(since_id=None, start_time=None, max_posts=500):
     url = f"{BASE_URL}/users/{USER_ID}/timelines/reverse_chronological"
     params = {
         "tweet.fields": TWEET_FIELDS,

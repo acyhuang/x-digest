@@ -11,7 +11,8 @@ import yaml
 logger = logging.getLogger(__name__)
 
 CONFIG_DIR = Path(__file__).parent.parent / "config"
-MODEL = "claude-haiku-4-5-20251001"
+MODEL = "claude-sonnet-4-6"
+BATCH_SIZE = 50
 
 
 def tier1_filter(tweets):
@@ -66,13 +67,7 @@ def tier2_filter(tweets, users):
     bad_examples = bad_examples or []
     sampled_bad = random.sample(bad_examples, min(15, len(bad_examples)))
 
-    lines = []
-    for t in tweets:
-        handle = users.get(t["author_id"], {}).get("username", "unknown")
-        text = t["text"].replace("\n", " ")
-        lines.append(f'[id:{t["id"]}] @{handle}: {text}')
-
-    prompt = (
+    prefix = (
         "You are filtering a Twitter/X timeline for relevance to a specific person's interests.\n\n"
         "## Interests\n"
         f"{interests}\n\n"
@@ -80,26 +75,39 @@ def tier2_filter(tweets, users):
         + "\n".join(f"- {e}" for e in sampled)
         + "\n\n## Negative examples (posts this person does NOT want to see):\n"
         + "\n".join(f"- {e}" for e in sampled_bad)
-        + "\n\n## Posts to evaluate:\n"
-        + "\n".join(lines)
-        + "\n\nReturn a JSON array of relevant posts in a ```json block:\n"
-        "```json\n"
-        '[{"id": "tweet_id", "reason": "one-line reason"}]\n'
-        "```\n"
-        "Include only posts that match the interests. Omit irrelevant posts entirely."
     )
 
-    result = _call_llm(prompt, strict=False)
-    if result is None:
-        logger.warning("LLM filter failed — passing all Tier 1 survivors through")
-        return [dict(t, _reason="unfiltered (LLM error)") for t in tweets]
+    id_to_reason = {}
+    batches = [tweets[i:i + BATCH_SIZE] for i in range(0, len(tweets), BATCH_SIZE)]
 
-    id_to_reason = {item["id"]: item["reason"] for item in result}
-    kept = []
-    for t in tweets:
-        if t["id"] in id_to_reason:
-            kept.append(dict(t, _reason=id_to_reason[t["id"]]))
+    for i, batch in enumerate(batches):
+        lines = []
+        for t in batch:
+            handle = users.get(t["author_id"], {}).get("username", "unknown")
+            text = t["text"].replace("\n", " ")
+            lines.append(f'[id:{t["id"]}] @{handle}: {text}')
 
+        prompt = (
+            prefix
+            + "\n\n## Posts to evaluate:\n"
+            + "\n".join(lines)
+            + "\n\nReturn a JSON array of relevant posts in a ```json block:\n"
+            "```json\n"
+            '[{"id": "tweet_id", "reason": "one-line reason"}]\n'
+            "```\n"
+            "Include only posts that match the interests. Omit irrelevant posts entirely."
+        )
+
+        result = _call_llm(prompt, strict=False)
+        if result is None:
+            logger.warning("LLM filter failed on batch %d/%d — passing batch through", i + 1, len(batches))
+            for t in batch:
+                id_to_reason[t["id"]] = "unfiltered (LLM error)"
+        else:
+            for item in result:
+                id_to_reason[item["id"]] = item["reason"]
+
+    kept = [dict(t, _reason=id_to_reason[t["id"]]) for t in tweets if t["id"] in id_to_reason]
     logger.info("Tier 2: %d → %d", len(tweets), len(kept))
     return kept
 
