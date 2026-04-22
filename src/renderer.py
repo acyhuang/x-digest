@@ -1,6 +1,9 @@
 import re
 from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
+
+_ET = ZoneInfo("America/New_York")
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from markupsafe import Markup, escape
@@ -35,7 +38,7 @@ def _build_post(tweet, users, media, ref_tweets):
     created_at = tweet.get("created_at", "")
     if created_at:
         dt = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
-        timestamp = dt.strftime("%Y-%m-%d %H:%M UTC")
+        timestamp = dt.astimezone(_ET).strftime("%Y-%m-%d %H:%M ET")
     else:
         timestamp = ""
 

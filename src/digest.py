@@ -1,6 +1,9 @@
 import json
 import logging
 from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
+
+_ET = ZoneInfo("America/New_York")
 from pathlib import Path
 
 from fetcher import fetch_home_timeline
@@ -61,7 +64,7 @@ def main():
     filtered = collapse_threads(filtered) if filtered else []
     filtered = tier2_filter(filtered, users) if filtered else []
 
-    date_str = now.strftime("%Y-%m-%d")
+    date_str = now.astimezone(_ET).strftime("%Y-%m-%d")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     render_digest(filtered, users, media, ref_tweets, date_str, OUTPUT_DIR / f"{date_str}.html", total_fetched=len(tweets))
